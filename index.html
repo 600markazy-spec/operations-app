@@ -125,7 +125,7 @@
   /* ===== صلاحيات: إخفاء عناصر التعديل بالكامل للمستخدمين بدون صلاحية ===== */
   body.view-only .admin-only{display:none !important;}
   .view-only-banner{display:none;background:rgba(234,88,12,0.12);border:1px solid rgba(234,88,12,0.35);color:#fb923c;font-size:12px;font-weight:700;padding:8px 16px;text-align:center;}
-  body.view-only .view-only-banner{display:block;}
+  body.read-only-user .view-only-banner{display:block;}
   .emergency-counter{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--gold2);font-weight:700;grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;}
   ::-webkit-scrollbar{width:6px;height:6px;}
   ::-webkit-scrollbar-track{background:transparent;}
@@ -148,7 +148,7 @@
     .logo-text h1 { color:#0a1628!important; font-size:16px!important; }
     .logo-text p { color:#555!important; }
     .header-stats { display:none!important; }
-    #logout-btn { display:none!important; }
+    #logout-btn, #mypw-btn { display:none!important; }
 
     /* شعار في رأس كل صفحة مطبوعة */
     @page {
@@ -194,7 +194,7 @@
     .logo-text{min-width:0;}
     .logo-text h1{font-size:12.5px;line-height:1.35;}
     .logo-text p{font-size:10px;}
-    #logout-btn{padding:6px 10px;font-size:11px;flex-shrink:0;}
+    #logout-btn,#mypw-btn{padding:6px 10px;font-size:11px;flex-shrink:0;}
     .nav-bar{padding:0 4px;}
     .nav-tab{padding:11px 12px;font-size:12px;gap:5px;}
     .main{padding:10px;}
@@ -459,6 +459,14 @@
 .lg-err.show{display:block;}
 @keyframes lgShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 .lg-footer{text-align:center;margin-top:16px;font-size:10px;color:rgba(201,168,76,0.2);letter-spacing:1px;}
+
+/* ===== الحسابات والصلاحيات ===== */
+.pm-table{border-collapse:collapse;width:100%;min-width:520px;}
+.pm-table th,.pm-table td{padding:8px 10px;text-align:center;border-bottom:1px solid rgba(42,63,95,0.5);font-size:12px;white-space:nowrap;}
+.pm-table th{color:var(--gold2);}
+.pm-table td:first-child,.pm-table th:first-child{text-align:right;font-weight:700;color:var(--white);}
+.pm-table input[type=checkbox]{width:18px;height:18px;accent-color:#c9a84c;cursor:pointer;}
+.acc-chip{display:inline-block;margin:2px 3px;padding:2px 9px;border-radius:10px;font-size:11px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold2);}
 </style>
 </head>
 <body>
@@ -506,7 +514,7 @@
       <button class="lg-btn" id="lg-btn" onclick="lgDoLogin()">دخول ← إلى النظام</button>
       <div class="lg-err" id="lg-err"></div>
     </div>
-    <div class="lg-footer">جميع الحقوق محفوظة © وكالة العمليات &nbsp;|&nbsp; نظام الشؤون الإدارية</div>
+    <div class="lg-footer">جميع الحقوق محفوظة © رائد / محمد أسامة منصور &nbsp;|&nbsp; نظام الشؤون الإدارية</div>
   </div>
 </div>
 <!-- BACKUP REMINDER BANNER -->
@@ -544,25 +552,26 @@
       </div>
     </div>
     <div class="header-stats">
-      <div class="stat-pill">👮 ضباط: <span id="hdr-officers">0</span></div>
-      <div class="stat-pill">🪖 أفراد: <span id="hdr-soldiers">0</span></div>
-      <div class="stat-pill">🎖️ مجندين: <span id="hdr-recruits">0</span></div>
-      <div class="stat-pill">🚗 مركبات: <span id="hdr-vehicles">0</span></div>
+      <div class="stat-pill" data-perm="officers.v">👮 ضباط: <span id="hdr-officers">0</span></div>
+      <div class="stat-pill" data-perm="soldiers.v">🪖 أفراد: <span id="hdr-soldiers">0</span></div>
+      <div class="stat-pill" data-perm="recruits.v">🎖️ مجندين: <span id="hdr-recruits">0</span></div>
+      <div class="stat-pill" data-perm="vehicles.v">🚗 مركبات: <span id="hdr-vehicles">0</span></div>
     </div>
+    <button id="mypw-btn" class="btn btn-outline btn-sm" onclick="myPwOpen()" title="تغيير كلمة المرور الخاصة بي">🔑 كلمة المرور</button>
     <button id="logout-btn" class="btn btn-outline btn-sm" onclick="lgLogout()" title="تسجيل الخروج">🚪 تسجيل الخروج</button>
   </div>
   <nav class="nav-bar">
     <button class="nav-tab active" onclick="showSection('dashboard')">🏠 الرئيسية</button>
-    <button class="nav-tab" onclick="showSection('officers')">⭐ الضباط</button>
-    <button class="nav-tab" onclick="showSection('soldiers')">🪖 الأفراد</button>
-    <button class="nav-tab" onclick="showSection('recruits')">🎖️ المجندين</button>
-    <button class="nav-tab" onclick="showSection('vehicles')">🚗 المركبات</button>
-    <button class="nav-tab" onclick="showSection('training-search')">🎓 بحث الفرق</button>
-    <button class="nav-tab" onclick="showSection('privilege-search')">🏅 بحث الامتيازات</button>
-    <button class="nav-tab" onclick="showSection('reports')">📊 التقارير</button>
-    <button class="nav-tab admin-only" onclick="showSection('import')">📥 استيراد</button>
+    <button class="nav-tab" data-perm="officers.v" onclick="showSection('officers')">⭐ الضباط</button>
+    <button class="nav-tab" data-perm="soldiers.v" onclick="showSection('soldiers')">🪖 الأفراد</button>
+    <button class="nav-tab" data-perm="recruits.v" onclick="showSection('recruits')">🎖️ المجندين</button>
+    <button class="nav-tab" data-perm="vehicles.v" onclick="showSection('vehicles')">🚗 المركبات</button>
+    <button class="nav-tab" data-perm="training.v" onclick="showSection('training-search')">🎓 بحث الفرق</button>
+    <button class="nav-tab" data-perm="privileges.v" onclick="showSection('privilege-search')">🏅 بحث الامتيازات</button>
+    <button class="nav-tab" data-perm="reports.v" onclick="showSection('reports')">📊 التقارير</button>
+    <button class="nav-tab" data-perm="import.a" onclick="showSection('import')">📥 استيراد</button>
     <button class="nav-tab admin-only" onclick="showSection('accounts')">🔑 الحسابات</button>
-    <button class="nav-tab" onclick="showSection('warehouse')">📦 المخزن</button>
+    <button class="nav-tab" data-perm="warehouse.v" onclick="showSection('warehouse')">📦 المخزن</button>
   </nav>
 </header>
 <div class="view-only-banner">👁️ وضع العرض فقط — يمكنك المشاهدة والطباعة، ولا تملك صلاحية إضافة أو تعديل أو حذف البيانات</div>
@@ -572,20 +581,20 @@
 <!-- DASHBOARD -->
 <section id="dashboard" class="section active">
   <div class="dash-grid">
-    <div class="dash-card" onclick="showSection('officers')"><div class="dash-card-icon">⭐</div><div class="dash-card-num" id="dash-officers">0</div><div class="dash-card-label">إجمالي الضباط</div></div>
-    <div class="dash-card" onclick="showSection('soldiers')"><div class="dash-card-icon">🪖</div><div class="dash-card-num" id="dash-soldiers">0</div><div class="dash-card-label">إجمالي الأفراد</div></div>
-    <div class="dash-card" onclick="showSection('recruits')"><div class="dash-card-icon">🎖️</div><div class="dash-card-num" id="dash-recruits">0</div><div class="dash-card-label">إجمالي المجندين</div></div>
-    <div class="dash-card" onclick="showSection('vehicles')"><div class="dash-card-icon">🚗</div><div class="dash-card-num" id="dash-vehicles">0</div><div class="dash-card-label">إجمالي المركبات</div></div>
-    <div class="dash-card" onclick="showSection('reports');setTimeout(()=>printCompRestReport(),300)"><div class="dash-card-icon">🛌</div><div class="dash-card-num" id="dash-comp-rest">0</div><div class="dash-card-label">راحات تعويضية معلقة</div><div class="dash-card-sub">اضغط لعرض الكشف</div></div>
-    <div class="dash-card"><div class="dash-card-icon">📅</div><div class="dash-card-num" id="dash-recruits-ending">0</div><div class="dash-card-label">تنتهي خدمتهم قريباً</div><div class="dash-card-sub">خلال 30 يوماً</div></div>
+    <div class="dash-card" data-perm="officers.v" onclick="showSection('officers')"><div class="dash-card-icon">⭐</div><div class="dash-card-num" id="dash-officers">0</div><div class="dash-card-label">إجمالي الضباط</div></div>
+    <div class="dash-card" data-perm="soldiers.v" onclick="showSection('soldiers')"><div class="dash-card-icon">🪖</div><div class="dash-card-num" id="dash-soldiers">0</div><div class="dash-card-label">إجمالي الأفراد</div></div>
+    <div class="dash-card" data-perm="recruits.v" onclick="showSection('recruits')"><div class="dash-card-icon">🎖️</div><div class="dash-card-num" id="dash-recruits">0</div><div class="dash-card-label">إجمالي المجندين</div></div>
+    <div class="dash-card" data-perm="vehicles.v" onclick="showSection('vehicles')"><div class="dash-card-icon">🚗</div><div class="dash-card-num" id="dash-vehicles">0</div><div class="dash-card-label">إجمالي المركبات</div></div>
+    <div class="dash-card" data-perm="reports.v officers.v" onclick="showSection('reports');setTimeout(()=>printCompRestReport(),300)"><div class="dash-card-icon">🛌</div><div class="dash-card-num" id="dash-comp-rest">0</div><div class="dash-card-label">راحات تعويضية معلقة</div><div class="dash-card-sub">اضغط لعرض الكشف</div></div>
+    <div class="dash-card" data-perm="recruits.v"><div class="dash-card-icon">📅</div><div class="dash-card-num" id="dash-recruits-ending">0</div><div class="dash-card-label">تنتهي خدمتهم قريباً</div><div class="dash-card-sub">خلال 30 يوماً</div></div>
   </div>
   <div id="recruit-alert-bar" class="recruit-alert-bar"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px;">
-    <div class="table-wrap">
+    <div class="table-wrap" data-perm="officers.v">
       <div style="padding:14px 20px;border-bottom:1px solid var(--border);font-weight:700;color:var(--gold2);font-size:13px;">⭐ آخر الضباط المضافين</div>
       <div class="table-scroll"><table><thead><tr><th>الاسم</th><th>الرتبة</th><th>الجهة</th></tr></thead><tbody id="dash-officers-body"></tbody></table></div>
     </div>
-    <div class="table-wrap">
+    <div class="table-wrap" data-perm="recruits.v">
       <div style="padding:14px 20px;border-bottom:1px solid var(--border);font-weight:700;color:var(--gold2);font-size:13px;">🎖️ مجندون تنتهي خدمتهم قريباً</div>
       <div class="table-scroll"><table><thead><tr><th>الاسم</th><th>رقم الشرطة</th><th>تاريخ الانتهاء</th></tr></thead><tbody id="dash-ending-body"></tbody></table></div>
     </div>
@@ -605,7 +614,7 @@
       <option>رائد</option><option>نقيب</option><option>ملازم أول</option><option>ملازم</option>
     </select>
     <div class="rank-count-info" id="officers-rank-count" style="display:none;"></div>
-    <button class="btn btn-gold admin-only" onclick="openModal('officer',null)">➕ إضافة ضابط</button>
+    <button class="btn btn-gold" data-perm="officers.a" onclick="openModal('officer',null)">➕ إضافة ضابط</button>
     <button class="btn btn-red admin-only" onclick="clearSectionData('officers')" title="مسح جميع بيانات الضباط">🗑️ مسح الضباط</button>
   </div>
   <div class="table-wrap">
@@ -641,7 +650,7 @@
       <option>مساعد أول</option><option>مساعد ثان</option><option>مساعد ثالث</option>
       <option>موظف مدني</option>
     </select>
-    <button class="btn btn-gold admin-only" onclick="openModal('soldier',null)">➕ إضافة فرد</button>
+    <button class="btn btn-gold" data-perm="soldiers.a" onclick="openModal('soldier',null)">➕ إضافة فرد</button>
     <button class="btn btn-red admin-only" onclick="clearSectionData('soldiers')" title="مسح جميع بيانات الأفراد">🗑️ مسح الأفراد</button>
   </div>
   <div class="table-wrap">
@@ -660,7 +669,7 @@
     <select id="recruits-filter" onchange="renderRecruits()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--white);font-family:'Cairo',sans-serif;font-size:13px;outline:none;">
       <option value="">الكل</option><option value="ending">ينتهون خلال 30 يوم</option><option value="absent">غياب مسجل</option>
     </select>
-    <button class="btn btn-gold admin-only" onclick="openModal('recruit',null)">➕ إضافة مجند</button>
+    <button class="btn btn-gold" data-perm="recruits.a" onclick="openModal('recruit',null)">➕ إضافة مجند</button>
     <button class="btn btn-red admin-only" onclick="clearSectionData('recruits')" title="مسح جميع بيانات المجندين">🗑️ مسح المجندين</button>
   </div>
   <div id="recruits-alert" style="display:none;background:rgba(234,88,12,0.15);border:1px solid rgba(234,88,12,0.5);border-radius:10px;padding:12px 18px;margin-bottom:16px;font-size:13px;font-weight:700;color:#fb923c;"></div>
@@ -680,7 +689,7 @@
     <select id="vehicles-filter" onchange="renderVehicles()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--white);font-family:'Cairo',sans-serif;font-size:13px;outline:none;">
       <option value="">كل الحالات</option><option>ممتازة</option><option>جيدة</option><option>متوسطة</option><option>تحت الإصلاح</option><option>معطلة</option>
     </select>
-    <button class="btn btn-gold admin-only" onclick="openModal('vehicle',null)">➕ إضافة مركبة</button>
+    <button class="btn btn-gold" data-perm="vehicles.a" onclick="openModal('vehicle',null)">➕ إضافة مركبة</button>
     <button class="btn btn-red admin-only" onclick="clearSectionData('vehicles')" title="مسح جميع بيانات المركبات">🗑️ مسح المركبات</button>
   </div>
   <div class="table-wrap">
@@ -750,40 +759,38 @@
 <!-- REPORTS -->
 <section id="reports" class="section">
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
-    <div class="dash-card" onclick="printReport('officers')"><div class="dash-card-icon">📄</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف الضباط</div><div class="dash-card-sub">طباعة كشف كامل بجميع الضباط</div></div>
-    <div class="dash-card" onclick="printReport('soldiers')"><div class="dash-card-icon">📄</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف الأفراد</div><div class="dash-card-sub">طباعة كشف كامل بجميع الأفراد</div></div>
-    <div class="dash-card" onclick="printReport('recruits')"><div class="dash-card-icon">📄</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف المجندين</div><div class="dash-card-sub">طباعة كشف كامل بجميع المجندين</div></div>
-    <div class="dash-card" onclick="printReport('vehicles')"><div class="dash-card-icon">🚗</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف المركبات</div><div class="dash-card-sub">طباعة كشف المركبات وحالتها</div></div>
-    <div class="dash-card" onclick="printCompRestReport()"><div class="dash-card-icon">🛌</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف الراحات التعويضية</div><div class="dash-card-sub">كشف تفصيلي بجميع الضباط</div></div>
-    <div class="dash-card" onclick="exportData()"><div class="dash-card-icon">💾</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">تصدير البيانات</div><div class="dash-card-sub">تصدير كل البيانات JSON</div></div>
+    <div class="dash-card" data-perm="officers.v" onclick="printReport('officers')"><div class="dash-card-icon">📄</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف الضباط</div><div class="dash-card-sub">طباعة كشف كامل بجميع الضباط</div></div>
+    <div class="dash-card" data-perm="soldiers.v" onclick="printReport('soldiers')"><div class="dash-card-icon">📄</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف الأفراد</div><div class="dash-card-sub">طباعة كشف كامل بجميع الأفراد</div></div>
+    <div class="dash-card" data-perm="recruits.v" onclick="printReport('recruits')"><div class="dash-card-icon">📄</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف المجندين</div><div class="dash-card-sub">طباعة كشف كامل بجميع المجندين</div></div>
+    <div class="dash-card" data-perm="vehicles.v" onclick="printReport('vehicles')"><div class="dash-card-icon">🚗</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف المركبات</div><div class="dash-card-sub">طباعة كشف المركبات وحالتها</div></div>
+    <div class="dash-card" data-perm="officers.v" onclick="printCompRestReport()"><div class="dash-card-icon">🛌</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">كشف الراحات التعويضية</div><div class="dash-card-sub">كشف تفصيلي بجميع الضباط</div></div>
+    <div class="dash-card" data-perm="reports.x" onclick="exportData()"><div class="dash-card-icon">💾</div><div style="font-weight:700;color:var(--gold2);font-size:14px;">تصدير البيانات</div><div class="dash-card-sub">تصدير كل البيانات JSON</div></div>
     <div class="dash-card admin-only" onclick="clearAllData()"><div class="dash-card-icon">🗑️</div><div style="font-weight:700;color:#f87171;font-size:14px;">مسح الكل</div><div class="dash-card-sub">حذف جميع البيانات (تحذير!)</div></div>
   </div>
   <div class="table-wrap" style="margin-top:20px;padding:16px;">
-    <div style="font-weight:700;color:var(--gold2);font-size:13px;margin-bottom:10px;">💾 النسخة الاحتياطية التلقائية (كل 10 دقائق)</div>
-    <p style="font-size:12px;color:rgba(205,214,232,0.6);margin-bottom:12px;">البرنامج يحفظ تلقائياً في المتصفح كل 10 دقائق. عند الضغط على "حفظ النسخة الآن" سيطلب منك تحديد مكان الحفظ مرة واحدة فقط، وبعدها سيحفظ تلقائياً في نفس المكان.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-      <button class="btn btn-gold" onclick="manualBackup()">💾 حفظ النسخة الآن</button>
-      <button class="btn btn-outline" id="auto-backup-btn" onclick="toggleAutoBackup()">⏱️ تفعيل النسخ التلقائي</button>
-      <span id="backup-status" style="font-size:12px;color:var(--gold3);align-self:center;"></span>
-    </div>
+    <div style="font-weight:700;color:var(--gold2);font-size:13px;margin-bottom:8px;">🔒 تخزين البيانات</div>
+    <p style="font-size:12px;color:rgba(205,214,232,0.6);">كل البيانات محفوظة على السيرفر فقط، ولا يتم تخزين أي نسخة منها على الجهاز المفتوح عليه البرنامج. عند الخروج أو إغلاق الصفحة تُمسح من الذاكرة.</p>
   </div>
 </section>
 
 <!-- ACCOUNTS -->
 <section id="accounts" class="section admin-only">
-  <div class="table-wrap" style="padding:20px;max-width:560px;">
-    <div style="font-weight:700;color:var(--gold2);font-size:15px;margin-bottom:6px;">🔑 إدارة كلمات المرور</div>
-    <p style="font-size:12px;color:rgba(205,214,232,0.6);margin-bottom:16px;">التغيير يسري على كل الأجهزة (بشرط تفعيل المزامنة).</p>
-    <div class="form-group"><label>كلمة مرور المدير الحالية (للتأكيد)</label><input type="password" id="acc-cur" autocomplete="off"></div>
-    <div class="form-group"><label>الحساب</label><select id="acc-user"></select></div>
-    <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="acc-new" autocomplete="new-password"></div>
-    <div class="form-group"><label>تأكيد كلمة المرور الجديدة</label><input type="password" id="acc-new2" autocomplete="new-password"></div>
-    <button class="btn btn-gold" onclick="accChangePassword()">💾 حفظ كلمة المرور</button>
+  <div class="table-wrap" style="padding:20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
+      <div style="font-weight:700;color:var(--gold2);font-size:15px;">🔑 إدارة الحسابات والصلاحيات</div>
+      <button class="btn btn-gold" onclick="accOpenUser(null)">➕ حساب جديد</button>
+    </div>
+    <p style="font-size:12px;color:rgba(205,214,232,0.6);margin-bottom:14px;">أنشئ حساب لكل شخص وحدّد له الصلاحيات بالتفصيل. الصلاحيات بتتطبق فوراً، وإيقاف الحساب بيفصل صاحبه في ثواني. كل مستخدم يقدر يغيّر كلمة مروره بنفسه من زر «🔑 كلمة المرور» في أعلى الصفحة.</p>
+    <div class="table-scroll"><table style="min-width:640px;">
+      <thead><tr><th>الاسم</th><th>اسم المستخدم</th><th>الحالة</th><th>الصلاحيات</th><th>إجراءات</th></tr></thead>
+      <tbody id="acc-body"><tr><td colspan="5" style="text-align:center;opacity:.6;">جاري التحميل...</td></tr></tbody>
+    </table></div>
   </div>
 </section>
 
+
 <!-- IMPORT -->
-<section id="import" class="section admin-only">
+<section id="import" class="section">
   <div style="max-width:700px;">
     <div class="table-wrap" style="padding:24px;margin-bottom:20px;">
       <h3 style="color:var(--gold2);margin-bottom:16px;font-size:15px;">📊 استيراد بيانات من ملف إكسل</h3>
@@ -804,7 +811,8 @@
       <div id="xl-preview" style="display:none;margin-top:16px;"></div>
       <p style="font-size:11px;color:rgba(205,214,232,0.5);margin-top:14px;line-height:1.8;">
         • الصف الأول في الملف لازم يكون عناوين الأعمدة (زي القالب). الأعمدة غير المعروفة بتتجاهل.<br>
-        • الأعمدة المتكررة (إجازات، دورات...) بتتضاف من داخل البرنامج، مش من الإكسل.<br>
+        • الفرق التدريبية للضباط: اكتب أسماء الفرق في عمود «الفرق التدريبية» وافصل بين كل فرقة والتانية بفاصلة «،» أو سطر جديد (Alt+Enter).<br>
+        • باقي الأعمدة المتكررة (إجازات...) بتتضاف من داخل البرنامج، مش من الإكسل.<br>
         • تقدر تختار بعد المعاينة: إضافة على الموجود، أو استبدال (مسح القديم). في الاستبدال بيطلب تأكيد.
       </p>
     </div>
@@ -837,8 +845,8 @@
 <section id="warehouse" class="section">
   <div class="wh-tabs">
     <button class="wh-tab active" onclick="whShowPanel('wh-stock')">📊 رصيد المخزن</button>
-    <button class="wh-tab admin-only" onclick="whShowPanel('wh-in')">📥 استلام (وارد)</button>
-    <button class="wh-tab admin-only" onclick="whShowPanel('wh-out')">📤 صرف (صادر)</button>
+    <button class="wh-tab" data-perm="warehouse.in" onclick="whShowPanel('wh-in')">📥 استلام (وارد)</button>
+    <button class="wh-tab" data-perm="warehouse.out" onclick="whShowPanel('wh-out')">📤 صرف (صادر)</button>
     <button class="wh-tab" onclick="whShowPanel('wh-history')">📋 سجل الحركة</button>
     <button class="wh-tab" onclick="whShowPanel('wh-report')">🖨️ تقارير وطباعة</button>
   </div>
@@ -1063,7 +1071,7 @@
 
 <!-- FOOTER -->
 <footer class="app-footer">
-  <span>© جميع الحقوق محفوظة — وكالة العمليات</span>
+  <span>© جميع الحقوق محفوظة — رائد / محمد أسامة منصور</span>
 </footer>
 
 </div>
@@ -1403,6 +1411,71 @@
 </div>
 
 <!-- VEHICLE MODAL -->
+<!-- ACCOUNT MODALS -->
+<div class="modal-overlay" id="modal-acc">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-header">
+      <div class="modal-title">👤 <span id="acc-title">حساب جديد</span></div>
+      <button class="modal-close" onclick="closeModal('acc')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>الاسم (يظهر في البرنامج) *</label><input type="text" id="acc-name" maxlength="60"></div>
+        <div class="form-group"><label>اسم المستخدم (إنجليزي) *</label><input type="text" id="acc-u" maxlength="30" autocomplete="off" placeholder="مثال: ahmed.ali" dir="ltr" style="text-align:left;"></div>
+        <div class="form-group full" id="acc-pw-wrap"><label>كلمة المرور المبدئية * (10 أحرف على الأقل — سلّمها للشخص ويغيّرها بنفسه)</label>
+          <div style="display:flex;gap:8px;"><input type="text" id="acc-pw" autocomplete="off" dir="ltr" style="flex:1;text-align:left;"><button class="btn btn-outline btn-sm" type="button" onclick="accGenPw()">🎲 توليد</button></div></div>
+      </div>
+      <div style="margin:16px 0 8px;font-weight:700;color:var(--gold2);font-size:13px;">الصلاحيات</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <button class="btn btn-outline btn-sm" type="button" onclick="accPreset('view')">👁️ عرض فقط</button>
+        <button class="btn btn-outline btn-sm" type="button" onclick="accPreset('all')">✅ تحديد الكل</button>
+        <button class="btn btn-outline btn-sm" type="button" onclick="accPreset('none')">⬜ مسح الكل</button>
+      </div>
+      <div class="table-scroll"><div id="acc-matrix"></div></div>
+      <p style="font-size:11px;color:rgba(205,214,232,0.5);margin-top:8px;">أي صلاحية (إضافة/تعديل/حذف...) تتطلب «عرض» لنفس القسم. «بحث الفرق» بيقرأ بيانات الضباط، و«بحث الامتيازات» بيقرأ الضباط والأفراد. «التقارير» بتعرض كشف كل قسم لو معاه «عرض» فيه فقط. «الاستيراد» بيضيف سجلات جديدة فقط (الاستبدال والمسح للمدير العام).</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gold" onclick="accSaveUser()">💾 حفظ</button>
+      <button class="btn btn-outline" onclick="closeModal('acc')">إلغاء</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-accpw">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header">
+      <div class="modal-title">🔑 كلمة مرور جديدة لـ <span id="accpw-name"></span></div>
+      <button class="modal-close" onclick="closeModal('accpw')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:12px;"><label>كلمة مرورك أنت (المدير) للتأكيد</label><input type="password" id="accpw-cur" autocomplete="current-password"></div>
+      <div class="form-group"><label>كلمة المرور الجديدة للمستخدم (10 أحرف على الأقل)</label>
+        <div style="display:flex;gap:8px;"><input type="text" id="accpw-new" autocomplete="off" dir="ltr" style="flex:1;text-align:left;"><button class="btn btn-outline btn-sm" type="button" onclick="document.getElementById('accpw-new').value=accRandPw()">🎲</button></div></div>
+      <p style="font-size:11px;color:rgba(205,214,232,0.5);margin-top:8px;">هيتفصل المستخدم من أي جلسة مفتوحة وهيدخل بالباسورد الجديد.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gold" onclick="accSavePw()">💾 حفظ</button>
+      <button class="btn btn-outline" onclick="closeModal('accpw')">إلغاء</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-mypw">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header">
+      <div class="modal-title">🔑 تغيير كلمة المرور الخاصة بي</div>
+      <button class="modal-close" onclick="closeModal('mypw')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:12px;"><label>كلمة المرور الحالية</label><input type="password" id="mypw-cur" autocomplete="current-password"></div>
+      <div class="form-group" style="margin-bottom:12px;"><label>كلمة المرور الجديدة (10 أحرف على الأقل)</label><input type="password" id="mypw-new" autocomplete="new-password"></div>
+      <div class="form-group"><label>تأكيد كلمة المرور الجديدة</label><input type="password" id="mypw-new2" autocomplete="new-password"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gold" onclick="myPwSave()">💾 حفظ</button>
+      <button class="btn btn-outline" onclick="closeModal('mypw')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-vehicle">
   <div class="modal">
     <div class="modal-header">
@@ -1526,19 +1599,9 @@ function _idbDelete(db,key){
 
 var _safeStorage = {
   getItem: function(k){ return Object.prototype.hasOwnProperty.call(_memStore,k) ? _memStore[k] : null; },
-  setItem: function(k,v){
-    _memStore[k]=v;
-    if(_idbDB){
-      _idbPut(_idbDB,k,v).catch(function(err){
-        console.error('IndexedDB save error:',err);
-        if(typeof toast==='function') toast('⚠️ خطأ أثناء الحفظ في قاعدة البيانات: '+(err&&err.message||'غير معروف'),'linear-gradient(135deg,#c0392b,#e74c3c)');
-      });
-    }
-  },
-  removeItem: function(k){
-    delete _memStore[k];
-    if(_idbDB) _idbDelete(_idbDB,k).catch(function(err){console.error('IndexedDB delete error:',err);});
-  }
+  // البيانات في ذاكرة الصفحة فقط — لا تُكتب على الجهاز (لا IndexedDB ولا localStorage). مكانها الوحيد السيرفر.
+  setItem: function(k,v){ _memStore[k]=v; },
+  removeItem: function(k){ delete _memStore[k]; }
 };
 
 // نقل أي بيانات قديمة كانت محفوظة في localStorage (من نسخة سابقة من البرنامج) لمرة واحدة
@@ -1565,18 +1628,11 @@ function _initStorage(){
   }).then(function(all){
     Object.keys(all).forEach(function(k){ _memStore[k]=all[k]; });
     if(Object.keys(all).length===0){
-      var migrated=_migrateLegacyLocalStorage();
-      if(migrated){
-        Object.keys(_memStore).forEach(function(k){ _idbPut(_idbDB,k,_memStore[k]).catch(function(){}); });
-      }
+      _migrateLegacyLocalStorage();
     }
   }).catch(function(err){
-    console.error('IndexedDB init failed, falling back to in-memory/localStorage:',err);
+    console.warn('IndexedDB غير متاح (مش مشكلة: البيانات في الذاكرة فقط):',err);
     _migrateLegacyLocalStorage();
-    // fallback أخير: لو IndexedDB غير متاح إطلاقاً، استخدم localStorage مباشرة (نفس السلوك القديم)
-    _safeStorage.getItem=function(k){ try{return localStorage.getItem(k);}catch(e){return Object.prototype.hasOwnProperty.call(_memStore,k)?_memStore[k]:null;} };
-    _safeStorage.setItem=function(k,v){ _memStore[k]=v; try{localStorage.setItem(k,v);}catch(e){} };
-    _safeStorage.removeItem=function(k){ delete _memStore[k]; try{localStorage.removeItem(k);}catch(e){} };
   });
 }
 
@@ -1598,10 +1654,54 @@ function _syncBadge(t,c){
 }
 function _tk(){try{return _safeSession.getItem('lg_tk')||'';}catch(e){return '';}}
 // حفظ رقم نسخة كل جدول محلياً عشان منحمّلش من السيرفر إلا لو اتغيّر فعلاً (أسرع بكتير عند الفتح)
-function _revSave(k,r){try{localStorage.setItem('pms_rev_'+k,String(r));}catch(e){}}
-function _revLoad(k){try{return parseInt(localStorage.getItem('pms_rev_'+k)||'0',10)||0;}catch(e){return 0;}}
-function _dirtySet(k,on){try{if(on)localStorage.setItem('pms_dirty_'+k,'1');else localStorage.removeItem('pms_dirty_'+k);}catch(e){}}
-function _dirtyGet(k){try{return localStorage.getItem('pms_dirty_'+k)==='1';}catch(e){return false;}}
+// (في الذاكرة فقط — لا شيء يُكتب على الجهاز)
+var _revMem={},_dirtyMem={};
+function _revSave(k,r){_revMem[k]=r;}
+function _revLoad(k){return _revMem[k]||0;}
+function _dirtySet(k,on){if(on)_dirtyMem[k]=1;else delete _dirtyMem[k];}
+function _dirtyGet(k){return !!_dirtyMem[k];}
+
+// ===== الصلاحيات في الصفحة (نفس قائمة السيرفر؛ السيرفر هو اللي بيفرضها فعلياً) =====
+var ALL_PERMS=['officers.v','officers.a','officers.e','officers.d','soldiers.v','soldiers.a','soldiers.e','soldiers.d','recruits.v','recruits.a','recruits.e','recruits.d','vehicles.v','vehicles.a','vehicles.e','vehicles.d','warehouse.v','warehouse.in','warehouse.out','warehouse.d','training.v','privileges.v','reports.v','reports.x','import.a'];
+var _KEY_READ={pms_officers:['officers.v','training.v','privileges.v'],pms_soldiers:['soldiers.v','privileges.v'],pms_recruits:['recruits.v'],pms_vehicles:['vehicles.v'],pms_wh_tx:['warehouse.v']};
+var _KEY_WRITE={pms_officers:['officers.a','officers.e','officers.d','import.a'],pms_soldiers:['soldiers.a','soldiers.e','soldiers.d','import.a'],pms_recruits:['recruits.a','recruits.e','recruits.d','import.a'],pms_vehicles:['vehicles.a','vehicles.e','vehicles.d','import.a'],pms_wh_tx:['warehouse.in','warehouse.out','warehouse.d']};
+function _perms(){try{return JSON.parse(_safeSession.getItem('lg_perms')||'[]')||[];}catch(e){return [];}}
+function can(p){return isAdminUser()||_perms().indexOf(p)>=0;}
+function _canReadKey(k){return isAdminUser()||(_KEY_READ[k]||[]).some(can);}
+function _canWriteKey(k){return isAdminUser()||(_KEY_WRITE[k]||[]).some(can);}
+function _rk(){return SYNC_KEYS.filter(_canReadKey);}
+// يمسح من الذاكرة أي جدول المستخدم مالوش صلاحية قراءته
+function _purgeUnreadable(){
+  SYNC_KEYS.forEach(function(k){ if(!_canReadKey(k)){ delete _memStore[k]; delete _rev[k]; delete _revMem[k]; delete _dirty[k]; delete _dirtyMem[k]; } });
+}
+// يفضّي كل بيانات الصفحة من الذاكرة (عند الخروج) علشان اللي بعده على نفس الصفحة ما يشوفش حاجة
+function _clearMemory(){
+  Object.keys(_memStore).forEach(function(k){ if(k.indexOf('pms_')===0) delete _memStore[k]; });
+  Object.keys(_timers).forEach(function(k){clearTimeout(_timers[k]);});
+  _rev={};_dirty={};_timers={};_pushing={};_pushFails={};_revMem={};_dirtyMem={};_syncReady=false;_syncOK=false;
+  try{ if(typeof _refreshUI==='function') _refreshUI(); }catch(e){}
+}
+// تنظيف أي نسخة محلية قديمة كانت متخزنة على الجهاز من الإصدارات السابقة (بعد ما نتأكد إن السيرفر استلم كل حاجة)
+var _syncOK=false,_wiped=false;
+function _wipeLocalData(){
+  if(_wiped) return; _wiped=true;
+  try{ if(_idbDB){ _idbDB.close(); _idbDB=null; } }catch(e){}
+  try{ indexedDB.deleteDatabase('pms_storage'); }catch(e){}
+  try{ Object.keys(localStorage).filter(function(k){return k.indexOf('pms_')===0;}).forEach(function(k){localStorage.removeItem(k);}); }catch(e){}
+}
+window.addEventListener('beforeunload',function(e){
+  var pend=Object.keys(_dirty).length||Object.keys(_pushing).some(function(k){return _pushing[k];});
+  if(pend){ e.preventDefault(); e.returnValue=''; return ''; }
+});
+function _wipeLocalSoon(){
+  if(_wiped||window._wipeTimer) return;
+  window._wipeTimer=setInterval(function(){
+    if(_wiped){clearInterval(window._wipeTimer);return;}
+    if(_syncOK&&!Object.keys(_dirty).length&&!Object.keys(_pushing).filter(function(k){return _pushing[k];}).length){
+      clearInterval(window._wipeTimer); _wipeLocalData();
+    }
+  },3000);
+}
 // تسخين السيرفر (Apps Script بيبقى نايم ويحتاج ثواني يصحى) — بنصحّيه أول ما الصفحة تفتح
 try{ if(typeof fetch==='function') fetch(SYNC_URL,{method:'GET',mode:'no-cors',cache:'no-store'}).catch(function(){}); }catch(e){}
 function _sx(url,opt0,retries){
@@ -1609,7 +1709,7 @@ function _sx(url,opt0,retries){
   var opt={}; for(var kk in (opt0||{})) opt[kk]=opt0[kk]; opt.signal=ctl.signal;
   return fetch(url,opt).then(function(r){clearTimeout(tm);return r.json();},function(er){clearTimeout(tm);throw er;}).then(function(j){
     if(!j||!j.ok){
-      if(j&&j.error==='unauthorized'&&typeof lgForceLogout==='function') lgForceLogout();
+      if(j&&(j.error==='unauthorized'||j.error==='disabled')&&_tk()&&typeof lgForceLogout==='function') lgForceLogout(j.error==='disabled'?'⛔ تم إيقاف هذا الحساب — تواصل مع المدير العام':'');
       var e=new Error((j&&j.error)||'bad response'); e.code=j&&j.error; e.info=j; throw e;
     }
     return j;}).catch(function(e){
@@ -1620,7 +1720,7 @@ function _sx(url,opt0,retries){
     throw e;
   });
 }
-function _spost(o,retries){o.tk=_tk();return _sx(SYNC_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o)},retries||0);}
+function _spost(o,retries){o.tk=_tk();return _sx(SYNC_URL,{method:'POST',cache:'no-store',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o)},retries||0);}
 // طلبات القراءة (meta/get) آمنة لإعادة المحاولة؛ الكتابة (set) لا تُعاد تلقائياً لتفادي تعارض وهمي
 function _sget(q){var o={};q.split('&').forEach(function(p){var a=p.split('=');if(a[0])o[a[0]]=decodeURIComponent(a[1]||'');});return _spost(o,3);}
 
@@ -1645,8 +1745,11 @@ function _push(k){
       _syncBadge('🟠 تعارض: البيانات اتحدّثت من جهاز آخر','#ffb74d');
       alert('⚠️ تعارض في الحفظ\nشخص آخر عدّل نفس البيانات قبل حفظك، فتم تحميل أحدث نسخة من السيرفر.\nراجع البيانات وأعد تعديلك إن لزم.');
     } else if(e&&e.code==='forbidden'){
-      delete _dirty[k];
-      _syncBadge('⛔ ليس لديك صلاحية الحفظ','#ff8a80');
+      // السيرفر رفض التغيير (مفيش صلاحية): نرجّع نسخة السيرفر ونبلّغ المستخدم
+      delete _dirty[k]; _dirtySet(k,false);
+      _pull(k).then(function(){_refreshUI();}).catch(function(){});
+      _syncBadge('⛔ ليس لديك صلاحية هذا الإجراء','#ff8a80');
+      try{ toast('⛔ ليس لديك صلاحية هذا الإجراء — تم التراجع عن التعديل','linear-gradient(135deg,#c0392b,#e74c3c)'); }catch(x){}
     } else {
       _pushFails[k]=(_pushFails[k]||0)+1;
       if(_pushFails[k]>=2) _syncBadge('🔴 لا يوجد اتصال — سيُعاد الحفظ تلقائياً','#ff8a80');
@@ -1657,7 +1760,6 @@ function _push(k){
 }
 function _apply(k,v,r){
   _memStore[k]=v; _rev[k]=r; _revSave(k,r);
-  if(_idbDB) _idbPut(_idbDB,k,v).catch(function(){});
 }
 function _pull(k){
   return _sget('action=get&key='+k).then(function(j){
@@ -1693,8 +1795,9 @@ function _poll(){
   if(_polling||document.hidden) return;
   _polling=true;
   _sget('action=meta').then(function(m){
+    if(m.me&&typeof lgApplyMe==='function') lgApplyMe(m.me);
     var need=[];
-    SYNC_KEYS.forEach(function(k){
+    _rk().forEach(function(k){
       var r=(m.rev&&m.rev[k])||0;
       if(_dirty[k]){ if(!_pushing[k]) _push(k); }
       else if(r>(_rev[k]||0)) need.push(k);
@@ -1727,7 +1830,8 @@ function _syncInit(){
   _syncBadge('⏳ جاري المزامنة...');
   var failed=0,stale=[];
   var first=_sget('action=meta').then(function(m){
-    var arr=SYNC_KEYS.map(function(k){
+    if(m.me&&typeof lgApplyMe==='function') lgApplyMe(m.me);
+    var arr=_rk().map(function(k){
       var r=(m.rev&&m.rev[k])||0;
       var hasLocal=_memStore[k]!=null&&_memStore[k]!=='[]';
       var stored=_revLoad(k);
@@ -1737,14 +1841,14 @@ function _syncInit(){
         if(hasLocal&&stored===r&&_dirtyGet(k)){_rev[k]=r;_dirty[k]=true;_schedulePush(k);return Promise.resolve();}
         stale.push(k); return Promise.resolve();
       }
-      var lv=_memStore[k]; if(lv&&lv!=='[]') _schedulePush(k);
+      var lv=_memStore[k]; if(lv&&lv!=='[]'&&_canWriteKey(k)) _schedulePush(k);
       return Promise.resolve();
     });
     // الجداول اللي اتغيّرت بتتحمّل كلها في طلب واحد
     return Promise.all(arr).then(function(){ return _pullMany(stale).catch(function(){failed++;}); });
   }).then(function(){
     if(failed) _syncBadge('🟠 تم تحميل جزء من البيانات — جاري إعادة المحاولة','#ffb74d');
-    else _syncBadge('🟢 متزامن');
+    else { _syncBadge('🟢 متزامن'); _syncOK=true; _wipeLocalSoon(); }
     if(failed) setTimeout(function(){ if(_tk()) _poll(); },4000);
   }).catch(function(){
     _syncBadge('🔴 تعذر الاتصال بالسيرفر — يعمل على بيانات الجهاز (إعادة محاولة تلقائية)','#ff8a80');
@@ -1762,32 +1866,158 @@ function _syncInit(){
 }
 
 // ============================================================
-// إدارة الحسابات — التحقق وكلمات المرور على السيرفر (Code.gs) وليس في المتصفح
+// إدارة الحسابات والصلاحيات — كل التحقق والصلاحيات على السيرفر (Code.gs)
 // ============================================================
-function accInit(){
-  var sel=document.getElementById('acc-user'); if(!sel) return;
-  sel.innerHTML='';
-  _spost({action:'users'}).then(function(j){
-    sel.innerHTML=(j.users||[]).map(function(u){return '<option value="'+esc(u.u)+'">'+esc(u.name)+' ('+esc(u.u)+')</option>';}).join('');
-  }).catch(function(){});
-  ['acc-cur','acc-new','acc-new2'].forEach(function(id){var e=document.getElementById(id); if(e) e.value='';});
+var ACC_DEF=[
+  {k:'officers',label:'الضباط',cols:[['v','عرض'],['a','إضافة'],['e','تعديل'],['d','حذف']]},
+  {k:'soldiers',label:'الأفراد',cols:[['v','عرض'],['a','إضافة'],['e','تعديل'],['d','حذف']]},
+  {k:'recruits',label:'المجندين',cols:[['v','عرض'],['a','إضافة'],['e','تعديل'],['d','حذف']]},
+  {k:'vehicles',label:'المركبات',cols:[['v','عرض'],['a','إضافة'],['e','تعديل'],['d','حذف']]},
+  {k:'warehouse',label:'المخزن',cols:[['v','عرض'],['in','استلام'],['out','صرف'],['d','حذف حركة']]},
+  {k:'training',label:'بحث الفرق',cols:[['v','عرض']]},
+  {k:'privileges',label:'بحث الامتيازات',cols:[['v','عرض']]},
+  {k:'reports',label:'التقارير',cols:[['v','عرض وطباعة'],['x','تصدير البيانات']]},
+  {k:'import',label:'الاستيراد',cols:[['a','استيراد (إضافة فقط)']]}
+];
+var _accUsers=[],_accEditing=null,_accPwUser=null;
+function accErr(e){
+  var m={exists:'اسم المستخدم موجود بالفعل',bad_username:'اسم المستخدم لازم يكون إنجليزي (حروف وأرقام و . _ -) من 3 إلى 30 حرف',bad_name:'اكتب الاسم',
+    weak_password:'كلمة المرور ضعيفة: 10 أحرف على الأقل ومينفعش تساوي اسم المستخدم',too_many:'وصلت للحد الأقصى من الحسابات',
+    bad_credentials:'كلمة المرور الحالية غير صحيحة',same_password:'كلمة المرور الجديدة لازم تختلف عن الحالية',forbidden:'ليس لديك صلاحية',
+    forbidden_target:'لا يمكن تنفيذ ذلك على حساب المدير العام',no_user:'الحساب غير موجود'};
+  var c=e&&e.code; return '❌ '+(m[c]||('تعذر تنفيذ العملية ('+(c||'اتصال')+')'));
 }
-function accChangePassword(){
-  if(!guardAdminAction('تغيير كلمات المرور')) return;
-  var RED='linear-gradient(135deg,#c0392b,#e74c3c)',GRN='linear-gradient(135deg,#1a5c2a,#2ecc71)';
-  var cur=document.getElementById('acc-cur').value,u=document.getElementById('acc-user').value,
-      n=document.getElementById('acc-new').value,n2=document.getElementById('acc-new2').value;
-  if(!cur){toast('⚠️ أدخل كلمة مرور المدير الحالية',RED);return;}
-  if(!u){toast('❌ حساب غير معروف',RED);return;}
-  if(n.length<10){toast('⚠️ كلمة المرور الجديدة لازم تكون 10 أحرف على الأقل',RED);return;}
-  if(n!==n2){toast('⚠️ تأكيد كلمة المرور غير مطابق',RED);return;}
-  _spost({action:'setpw',cp:cur,u:u,np:n}).then(function(j){
-    if(j&&j.token) _safeSession.setItem('lg_tk',j.token);
-    accInit();
-    toast('✅ تم تغيير كلمة المرور',GRN);
-  }).catch(function(e){
-    toast(e.code==='bad_credentials'?'❌ كلمة مرور المدير الحالية غير صحيحة':'❌ تعذر تغيير كلمة المرور ('+(e.code||'اتصال')+')',RED);
+var _RED='linear-gradient(135deg,#c0392b,#e74c3c)',_GRN='linear-gradient(135deg,#1a5c2a,#2ecc71)';
+function accRandPw(){
+  var ch='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789',a=new Uint32Array(14),o='';
+  (window.crypto||window.msCrypto).getRandomValues(a);
+  for(var i=0;i<a.length;i++) o+=ch.charAt(a[i]%ch.length);
+  return o;
+}
+function accGenPw(){ document.getElementById('acc-pw').value=accRandPw(); }
+
+function accInit(){
+  var body=document.getElementById('acc-body'); if(!body) return;
+  _spost({action:'users'}).then(function(j){ _accUsers=j.users||[]; accRender(); })
+  .catch(function(e){ body.innerHTML='<tr><td colspan="5" style="text-align:center;color:#f87171;">تعذر تحميل الحسابات</td></tr>'; });
+}
+function accSummary(perms){
+  var out=[];
+  ACC_DEF.forEach(function(sec){
+    var on=sec.cols.filter(function(c){return perms.indexOf(sec.k+'.'+c[0])>=0;}).map(function(c){return c[1];});
+    if(on.length) out.push('<span class="acc-chip">'+esc(sec.label)+': '+esc(on.join('، '))+'</span>');
   });
+  return out.join('')||'<span style="opacity:.5;">بدون صلاحيات</span>';
+}
+function accRender(){
+  var body=document.getElementById('acc-body');
+  body.innerHTML=_accUsers.map(function(u){
+    var isAdm=u.role==='admin', st=u.dis?'<span class="badge badge-red">موقوف</span>':'<span class="badge badge-green">نشط</span>';
+    var acts=isAdm?'<span style="opacity:.5;font-size:11px;">المدير العام — كلمة مروره من زر «🔑 كلمة المرور»</span>':
+      '<button class="btn btn-outline btn-sm" data-u="'+esc(u.u)+'" onclick="accOpenUser(this.dataset.u)">✏️ الصلاحيات</button> '+
+      '<button class="btn btn-outline btn-sm" data-u="'+esc(u.u)+'" onclick="accOpenPw(this.dataset.u)">🔑 باسورد</button> '+
+      '<button class="btn btn-outline btn-sm" data-u="'+esc(u.u)+'" data-d="'+(u.dis?0:1)+'" onclick="accToggle(this.dataset.u,this.dataset.d==\'1\')">'+(u.dis?'▶️ تفعيل':'⏸️ إيقاف')+'</button> '+
+      '<button class="btn btn-red btn-sm" data-u="'+esc(u.u)+'" onclick="accDelete(this.dataset.u)">🗑️</button>';
+    return '<tr'+(u.dis?' style="opacity:.6"':'')+'><td style="font-weight:700;color:var(--white)">'+esc(u.name)+'</td><td dir="ltr" style="text-align:right">'+esc(u.u)+'</td><td>'+st+'</td><td style="white-space:normal;min-width:240px;">'+(isAdm?'<span class="acc-chip">كل الصلاحيات</span>':accSummary(u.perms||[]))+'</td><td>'+acts+'</td></tr>';
+  }).join('')||'<tr><td colspan="5" style="text-align:center;opacity:.6;">لا توجد حسابات</td></tr>';
+}
+function accBuildMatrix(sel){
+  var h='<table class="pm-table"><tbody>';
+  ACC_DEF.forEach(function(sec){
+    h+='<tr><td>'+esc(sec.label)+'</td>';
+    for(var i=0;i<4;i++){
+      var c=sec.cols[i];
+      h+= c ? '<td><label style="cursor:pointer;display:inline-flex;gap:6px;align-items:center;"><input type="checkbox" data-p="'+sec.k+'.'+c[0]+'"'+(sel.indexOf(sec.k+'.'+c[0])>=0?' checked':'')+'> '+esc(c[1])+'</label></td>' : '<td></td>';
+    }
+    h+='</tr>';
+  });
+  document.getElementById('acc-matrix').innerHTML=h+'</tbody></table>';
+}
+document.addEventListener('change',function(e){
+  var t=e.target; if(!t||!t.dataset||!t.dataset.p||!document.getElementById('acc-matrix')||!document.getElementById('acc-matrix').contains(t)) return;
+  var sec=t.dataset.p.split('.')[0], all=document.querySelectorAll('#acc-matrix input[data-p^="'+sec+'."]'), v=document.querySelector('#acc-matrix input[data-p="'+sec+'.v"]');
+  if(!v) return;
+  if(t===v&&!t.checked) all.forEach(function(x){x.checked=false;});
+  else if(t!==v&&t.checked) v.checked=true;
+});
+function accPerms(){ return Array.prototype.map.call(document.querySelectorAll('#acc-matrix input:checked'),function(x){return x.dataset.p;}); }
+function accPreset(kind){
+  document.querySelectorAll('#acc-matrix input').forEach(function(x){
+    x.checked= kind==='all' ? true : kind==='view' ? /\.v$/.test(x.dataset.p) : false;
+  });
+}
+function accOpenUser(u){
+  var rec=u?_accUsers.filter(function(x){return x.u===u;})[0]:null;
+  _accEditing=rec?rec.u:null;
+  document.getElementById('acc-title').textContent=rec?('صلاحيات: '+rec.name):'حساب جديد';
+  document.getElementById('acc-name').value=rec?rec.name:'';
+  var ue=document.getElementById('acc-u'); ue.value=rec?rec.u:''; ue.disabled=!!rec;
+  document.getElementById('acc-pw').value=rec?'':accRandPw();
+  document.getElementById('acc-pw-wrap').style.display=rec?'none':'';
+  accBuildMatrix(rec?(rec.perms||[]):ALL_PERMS.filter(function(p){return /\.v$/.test(p);}));
+  document.getElementById('modal-acc').classList.add('open');
+}
+function accSaveUser(){
+  if(!guardAdminAction('إدارة الحسابات')) return;
+  var name=document.getElementById('acc-name').value.trim(), u=document.getElementById('acc-u').value.trim().toLowerCase(), pw=document.getElementById('acc-pw').value, perms=accPerms();
+  if(!name){toast('⚠️ اكتب الاسم',_RED);return;}
+  var req;
+  if(_accEditing){ req={action:'updateuser',u:_accEditing,name:name,perms:perms}; }
+  else{
+    if(!/^[a-z0-9][a-z0-9_.-]{2,29}$/.test(u)){toast('⚠️ اسم المستخدم: إنجليزي (حروف وأرقام و . _ -) من 3 إلى 30',_RED);return;}
+    if(pw.length<10){toast('⚠️ كلمة المرور المبدئية 10 أحرف على الأقل',_RED);return;}
+    req={action:'createuser',u:u,name:name,np:pw,perms:perms};
+  }
+  _spost(req).then(function(){
+    var created=!_accEditing; closeModal('acc'); accInit();
+    if(created){ alert('✅ تم إنشاء الحساب\n\nاسم المستخدم: '+u+'\nكلمة المرور المبدئية: '+pw+'\n\nسلّمها للشخص وهيغيّرها بنفسه من زر «🔑 كلمة المرور». الباسورد مش هيظهر تاني.'); }
+    else toast('✅ تم حفظ الصلاحيات',_GRN);
+  }).catch(function(e){toast(accErr(e),_RED);});
+}
+function accToggle(u,dis){
+  var rec=_accUsers.filter(function(x){return x.u===u;})[0]; if(!rec) return;
+  if(!confirm(dis?('إيقاف حساب «'+rec.name+'»؟ هيتفصل فوراً ومش هيقدر يدخل.'):('تفعيل حساب «'+rec.name+'»؟'))) return;
+  _spost({action:'setdisabled',u:u,disabled:dis}).then(function(){ toast(dis?'⏸️ تم إيقاف الحساب':'▶️ تم تفعيل الحساب',_GRN); accInit(); })
+  .catch(function(e){toast(accErr(e),_RED);});
+}
+function accDelete(u){
+  var rec=_accUsers.filter(function(x){return x.u===u;})[0]; if(!rec) return;
+  if(!confirm('حذف حساب «'+rec.name+'» نهائياً؟ (لو عايز توقفه مؤقتاً استخدم «إيقاف»)')) return;
+  _spost({action:'deleteuser',u:u}).then(function(){ toast('🗑️ تم حذف الحساب',_GRN); accInit(); })
+  .catch(function(e){toast(accErr(e),_RED);});
+}
+function accOpenPw(u){
+  var rec=_accUsers.filter(function(x){return x.u===u;})[0]; if(!rec) return;
+  _accPwUser=u; document.getElementById('accpw-name').textContent=rec.name;
+  document.getElementById('accpw-cur').value=''; document.getElementById('accpw-new').value=accRandPw();
+  document.getElementById('modal-accpw').classList.add('open');
+}
+function accSavePw(){
+  if(!guardAdminAction('تغيير كلمات المرور')) return;
+  var cp=document.getElementById('accpw-cur').value, np=document.getElementById('accpw-new').value;
+  if(!cp){toast('⚠️ اكتب كلمة مرورك للتأكيد',_RED);return;}
+  if(np.length<10){toast('⚠️ كلمة المرور الجديدة 10 أحرف على الأقل',_RED);return;}
+  _spost({action:'setpw',cp:cp,u:_accPwUser,np:np}).then(function(j){
+    if(j&&j.token) _safeSession.setItem('lg_tk',j.token);
+    closeModal('accpw');
+    alert('✅ تم تغيير كلمة المرور\n\nالباسورد الجديد: '+np+'\n\nسلّمه للشخص — مش هيظهر تاني.');
+  }).catch(function(e){toast(accErr(e),_RED);});
+}
+// تغيير كلمة المرور الخاصة بالمستخدم الحالي (أي مستخدم)
+function myPwOpen(){
+  ['mypw-cur','mypw-new','mypw-new2'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('modal-mypw').classList.add('open');
+}
+function myPwSave(){
+  var cp=document.getElementById('mypw-cur').value, np=document.getElementById('mypw-new').value, n2=document.getElementById('mypw-new2').value;
+  if(!cp){toast('⚠️ اكتب كلمة المرور الحالية',_RED);return;}
+  if(np.length<10){toast('⚠️ كلمة المرور الجديدة 10 أحرف على الأقل',_RED);return;}
+  if(np!==n2){toast('⚠️ تأكيد كلمة المرور غير مطابق',_RED);return;}
+  if(np===cp){toast('⚠️ كلمة المرور الجديدة لازم تختلف عن الحالية',_RED);return;}
+  _spost({action:'mypw',cp:cp,np:np}).then(function(j){
+    if(j&&j.token) _safeSession.setItem('lg_tk',j.token);
+    closeModal('mypw'); toast('✅ تم تغيير كلمة المرور',_GRN);
+  }).catch(function(e){toast(accErr(e),_RED);});
 }
 
 // ============================================================
@@ -1827,7 +2057,7 @@ function setVal(id,v){const el=document.getElementById(id);if(el)el.value=v||'';
 // NAVIGATION
 // ============================================================
 function showSection(name){
-  if((name==='import'||name==='accounts') && !isAdminUser()){ guardAdminAction(name==='accounts'?'إدارة الحسابات':'الاستيراد'); name='dashboard'; }
+  if(!_sectionAllowed(name)){ toast('⛔ ليس لديك صلاحية الدخول لهذا القسم','linear-gradient(135deg,#c0392b,#e74c3c)'); name='dashboard'; }
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(name).classList.add('active');
@@ -2038,10 +2268,6 @@ function addOfficerTraining(data){
     </div>
     <div class="item-grid">
       <div class="form-group" style="grid-column:span 2"><label>اسم الفرقة التدريبية</label><input type="text" class="ot-name" value="${esc(d.name||'')}"></div>
-      <div class="form-group"><label>مكان الانعقاد</label><input type="text" class="ot-place" value="${esc(d.place||'')}"></div>
-      <div class="form-group"><label>من تاريخ</label><input type="date" class="ot-from" value="${esc(d.from||'')}"></div>
-      <div class="form-group"><label>إلى تاريخ</label><input type="date" class="ot-to" value="${esc(d.to||'')}"></div>
-      <div class="form-group"><label>ترتيب الضابط في الفرقة</label><input type="text" class="ot-rank" value="${esc(d.rankInCourse||'')}" placeholder=" مثال: الأول / الثاني / ناجح"></div>
     </div>`;
   list.appendChild(div);
 }
@@ -2407,12 +2633,8 @@ function collectOfficerPrivileges(){
 }
 function collectOfficerTraining(){
   return [...document.querySelectorAll('#officer-training-list .dynamic-item')].map(el=>({
-    name:el.querySelector('.ot-name').value,
-    place:el.querySelector('.ot-place').value,
-    from:el.querySelector('.ot-from').value,
-    to:el.querySelector('.ot-to').value,
-    rankInCourse:el.querySelector('.ot-rank').value
-  }));
+    name:el.querySelector('.ot-name').value.trim()
+  })).filter(t=>t.name);
 }
 function collectSoldierAnnualLeaves(){
   return [...document.querySelectorAll('#s-annual-leaves-list .dynamic-item')].map(el=>({
@@ -2473,7 +2695,7 @@ function populateOfficerForm(r){
 // MODAL OPEN / CLOSE
 // ============================================================
 function openModal(type,id){
-  if(!guardAdminAction(id?'التعديل':'الإضافة'))return;
+  if(!guardPerm(_secOf(type)+(id?'.e':'.a'),id?'التعديل':'الإضافة'))return;
   editingId[type]=id;
   if(type==='officer'){
     ['annual-leaves-list','emergency-leaves-list','sick-leaves-list','comp-rests-list','missions-list','reinforcements-list','officer-privileges-list','officer-training-list'].forEach(lid=>{document.getElementById(lid).innerHTML='';});
@@ -2668,7 +2890,7 @@ function setOfficerUnit(val){
 
 
 function saveOfficer(){
-  if(!guardAdminAction('التعديل'))return;
+  if(!guardPerm('officers.'+(editingId.officer?'e':'a'),editingId.officer?'التعديل':'الإضافة'))return;
   const name=val('o-name');if(!name){toast('الاسم مطلوب','linear-gradient(135deg,#c0392b,#e74c3c)');return;}
   let emTotal=0;document.querySelectorAll('#emergency-leaves-list .el-days').forEach(el=>{emTotal+=parseInt(el.value)||0;});
   if(emTotal>7){toast('الإجازات الطارئة تجاوزت 7 أيام!','linear-gradient(135deg,#c0392b,#e74c3c)');return;}
@@ -2694,7 +2916,7 @@ function saveOfficer(){
 }
 
 function saveSoldier(){
-  if(!guardAdminAction('التعديل'))return;
+  if(!guardPerm('soldiers.'+(editingId.soldier?'e':'a'),editingId.soldier?'التعديل':'الإضافة'))return;
   const name=val('s-name');if(!name){toast('الاسم مطلوب','linear-gradient(135deg,#c0392b,#e74c3c)');return;}
   const data=DB.soldiers();
   const old=editingId.soldier?data.find(r=>r.id===editingId.soldier):{};
@@ -2727,7 +2949,7 @@ function saveSoldier(){
 }
 
 function saveRecruit(){
-  if(!guardAdminAction('التعديل'))return;
+  if(!guardPerm('recruits.'+(editingId.recruit?'e':'a'),editingId.recruit?'التعديل':'الإضافة'))return;
   const name=val('r-name');if(!name){toast('الاسم مطلوب','linear-gradient(135deg,#c0392b,#e74c3c)');return;}
   const data=DB.recruits();
   const old=editingId.recruit?data.find(r=>r.id===editingId.recruit):{};
@@ -2750,7 +2972,7 @@ function saveRecruit(){
 }
 
 function saveVehicle(){
-  if(!guardAdminAction('التعديل'))return;
+  if(!guardPerm('vehicles.'+(editingId.vehicle?'e':'a'),editingId.vehicle?'التعديل':'الإضافة'))return;
   const number=val('v-number');if(!number){toast('رقم المركبة مطلوب','linear-gradient(135deg,#c0392b,#e74c3c)');return;}
   const data=DB.vehicles();
   const old=editingId.vehicle?data.find(r=>r.id===editingId.vehicle):{};
@@ -2764,7 +2986,7 @@ function saveVehicle(){
 // DELETE
 // ============================================================
 function deleteRecord(type,id){
-  if(!guardAdminAction('الحذف'))return;
+  if(!guardPerm(_secOf(type)+'.d','الحذف'))return;
   if(!confirm('هل أنت متأكد من الحذف؟'))return;
   if(type==='officer'){DB.saveOfficers(DB.officers().filter(r=>r.id!==id));renderOfficers();}
   if(type==='soldier'){DB.saveSoldiers(DB.soldiers().filter(r=>r.id!==id));renderSoldiers();}
@@ -2859,8 +3081,8 @@ function renderOfficers(){
     return`<tr>
       <td class="sticky-col"><div class="action-btns">
         <button class="btn btn-outline btn-sm" onclick="showProfile('officer','${eid(r.id)}')">📋</button>
-        <button class="btn btn-outline btn-sm admin-only" onclick="openModal('officer','${eid(r.id)}')">✏️</button>
-        <button class="btn btn-red btn-sm admin-only" onclick="deleteRecord('officer','${eid(r.id)}')">🗑️</button>
+        <button class="btn btn-outline btn-sm" data-perm="officers.e" onclick="openModal('officer','${eid(r.id)}')">✏️</button>
+        <button class="btn btn-red btn-sm" data-perm="officers.d" onclick="deleteRecord('officer','${eid(r.id)}')">🗑️</button>
       </div></td>
       <td><span class="badge badge-gold">${esc(r.seniority||'-')}</span></td>
       <td><span class="badge badge-blue">${esc(r.rank)}</span></td>
@@ -2893,8 +3115,8 @@ function renderSoldiers(){
     return`<tr>
       <td class="sticky-col"><div class="action-btns">
         <button class="btn btn-outline btn-sm" onclick="showProfile('soldier','${eid(r.id)}')">📋</button>
-        <button class="btn btn-outline btn-sm admin-only" onclick="openModal('soldier','${eid(r.id)}')">✏️</button>
-        <button class="btn btn-red btn-sm admin-only" onclick="deleteRecord('soldier','${eid(r.id)}')">🗑️</button>
+        <button class="btn btn-outline btn-sm" data-perm="soldiers.e" onclick="openModal('soldier','${eid(r.id)}')">✏️</button>
+        <button class="btn btn-red btn-sm" data-perm="soldiers.d" onclick="deleteRecord('soldier','${eid(r.id)}')">🗑️</button>
       </div></td>
       <td dir="ltr" style="font-weight:700">${esc(r.policeNo||'-')}</td>
       <td style="font-weight:700;color:var(--white)">${esc(r.name)}</td>
@@ -2925,8 +3147,8 @@ function renderRecruits(){
     return`<tr>
       <td class="sticky-col"><div class="action-btns">
         <button class="btn btn-outline btn-sm" onclick="showProfile('recruit','${eid(r.id)}')">📋</button>
-        <button class="btn btn-outline btn-sm admin-only" onclick="openModal('recruit','${eid(r.id)}')">✏️</button>
-        <button class="btn btn-red btn-sm admin-only" onclick="deleteRecord('recruit','${eid(r.id)}')">🗑️</button>
+        <button class="btn btn-outline btn-sm" data-perm="recruits.e" onclick="openModal('recruit','${eid(r.id)}')">✏️</button>
+        <button class="btn btn-red btn-sm" data-perm="recruits.d" onclick="deleteRecord('recruit','${eid(r.id)}')">🗑️</button>
       </div></td>
       <td dir="ltr" style="font-weight:700">${esc(r.policeNo||'-')}</td>
       <td style="font-weight:700;color:var(--white)">${esc(r.name)}</td>
@@ -2951,8 +3173,8 @@ function renderVehicles(){
   document.getElementById('vehicles-body').innerHTML=data.length?data.map(r=>`
     <tr>
       <td class="sticky-col"><div class="action-btns">
-        <button class="btn btn-outline btn-sm admin-only" onclick="openModal('vehicle','${eid(r.id)}')">✏️</button>
-        <button class="btn btn-red btn-sm admin-only" onclick="deleteRecord('vehicle','${eid(r.id)}')">🗑️</button>
+        <button class="btn btn-outline btn-sm" data-perm="vehicles.e" onclick="openModal('vehicle','${eid(r.id)}')">✏️</button>
+        <button class="btn btn-red btn-sm" data-perm="vehicles.d" onclick="deleteRecord('vehicle','${eid(r.id)}')">🗑️</button>
       </div></td>
       <td style="font-weight:700;color:var(--white)" dir="ltr">${esc(r.number)}</td>
       <td>${esc(r.type||'-')}</td><td>${esc(r.model||'-')} ${r.year?`(${esc(r.year)})`:''}</td>
@@ -3032,12 +3254,10 @@ function renderTrainingResults(results,mode){
         <strong style="color:var(--white)">${esc(r.name)}</strong>
         <span style="font-size:11px;color:rgba(205,214,232,0.5);margin-right:8px">أقدمية: ${esc(r.seniority||'—')}</span>
       </div>
-      <div class="table-scroll"><table>
-        <thead><tr><th>#</th><th>اسم الفرقة</th><th>مكان الانعقاد</th><th>من</th><th>إلى</th><th>ترتيب الضابط</th></tr></thead>
+      <div class="table-scroll"><table style="min-width:0">
+        <thead><tr><th style="width:60px">#</th><th>اسم الفرقة</th></tr></thead>
         <tbody>${item.courses.map((t,i)=>`<tr>
           <td>${i+1}</td><td style="font-weight:700;color:var(--white)">${esc(t.name||'—')}</td>
-          <td>${esc(t.place||'—')}</td><td>${esc(t.from||'—')}</td><td>${esc(t.to||'—')}</td>
-          <td><span class="badge badge-gold">${esc(t.rankInCourse||'—')}</span></td>
         </tr>`).join('')}</tbody>
       </table></div>
     </div>`;
@@ -3178,8 +3398,8 @@ function showProfile(type,id){
         r.privileges.map((p,i)=>tr2([i+1,p.name,p.date,p.returnDate,p.note])));
     }
     if(r.trainings&&r.trainings.length){
-      html+=sectionTable('🎓 الفرق التدريبية',['#','اسم الفرقة','مكان الانعقاد','من','إلى','الترتيب'],
-        r.trainings.map((t,i)=>tr2([i+1,t.name,t.place,t.from,t.to,t.rankInCourse])));
+      html+=sectionTable('🎓 الفرق التدريبية',['#','اسم الفرقة'],
+        r.trainings.map((t,i)=>tr2([i+1,t.name])));
     }
     if(r.notes)html+=`<div style="background:rgba(10,22,40,0.5);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;margin-bottom:12px;">📝 ${esc(r.notes)}</div>`;
 
@@ -3509,125 +3729,21 @@ function getBackupData(){
   return {officers:DB.officers(),soldiers:DB.soldiers(),recruits:DB.recruits(),vehicles:DB.vehicles(),warehouse:whTx(),backupAt:new Date().toISOString()};
 }
 
-// --- حفظ تلقائي في localStorage كل 10 دقائق ---
-function autoSaveToBrowser(){
-  try{
-    const data=getBackupData();
-    _safeStorage.setItem('pms_auto_backup',JSON.stringify(data));
-    const statusEl=document.getElementById('backup-status');
-    if(statusEl) statusEl.textContent=`✅ آخر حفظ تلقائي: ${new Date().toLocaleTimeString('ar-EG')}`;
-  }catch(e){console.warn('فشل الحفظ التلقائي',e);}
-}
-
-// --- كتابة على نفس الملف المحدد مسبقاً ---
-async function writeToFileHandle(data){
-  if(!backupFileHandle) return false;
-  try{
-    const writable=await backupFileHandle.createWritable();
-    await writable.write(data);
-    await writable.close();
-    return true;
-  }catch(e){
-    console.error('File write error:',e);
-    backupFileHandle=null;
-    return false;
-  }
-}
-
-// --- النسخ الاحتياطي الآن: يفتح نفس المكان أو يختار مكاناً جديداً ---
-async function manualBackup(){
-  const all=getBackupData();
-  const data=JSON.stringify(all,null,2);
-
-  if(window.showSaveFilePicker){
-    try{
-      // لو عنده مقبض محفوظ — يكتب على نفس الملف مباشرةً
-      if(backupFileHandle){
-        const ok=await writeToFileHandle(data);
-        if(ok){
-          toast('💾 تم تحديث النسخة الاحتياطية في نفس المكان');
-          const statusEl=document.getElementById('backup-status');
-          if(statusEl) statusEl.textContent=`✅ آخر حفظ: ${new Date().toLocaleTimeString('ar-EG')}`;
-          return;
-        }
-      }
-      // أول مرة أو فقد الإذن — يختار مكان جديد
-      backupFileHandle=await window.showSaveFilePicker({
-        suggestedName:`personnel_backup_${new Date().toISOString().slice(0,10)}.json`,
-        types:[{description:'ملف JSON',accept:{'application/json':['.json']}}]
-      });
-      await writeToFileHandle(data);
-      toast('✅ تم حفظ النسخة الاحتياطية — سيُحدَّث نفس الملف تلقائياً');
-      const statusEl=document.getElementById('backup-status');
-      if(statusEl) statusEl.textContent=`✅ آخر حفظ: ${new Date().toLocaleTimeString('ar-EG')}`;
-    }catch(e){
-      // ألغى المستخدم — ننزّل ملف عادي
-      downloadBackupFile(data);
-    }
-  } else {
-    downloadBackupFile(data);
-  }
-  // دائماً احفظ في localStorage أيضاً
-  autoSaveToBrowser();
-}
-
-function downloadBackupFile(data){
-  const blob=new Blob([data],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`personnel_backup_${new Date().toISOString().replace(/[:.]/g,'-').slice(0,19)}.json`;
-  a.click();
-  toast('💾 تم تنزيل النسخة الاحتياطية');
-}
-
-// --- بدء دورة الـ 10 دقائق ---
-function startBackupCycle(){
-  autoBackupInterval=setInterval(async ()=>{
-    autoSaveToBrowser(); // حفظ في localStorage دائماً
-    // لو عنده مقبض ملف — يحدّثه تلقائياً بدون إزعاج المستخدم
-    if(backupFileHandle){
-      const data=JSON.stringify(getBackupData(),null,2);
-      await writeToFileHandle(data);
-      const statusEl=document.getElementById('backup-status');
-      if(statusEl) statusEl.textContent=`✅ آخر حفظ تلقائي: ${new Date().toLocaleTimeString('ar-EG')}`;
-    } else {
-      showBackupReminder(); // أظهر تذكير الحفظ فقط لو مفيش ملف محدد
-    }
-  }, BACKUP_INTERVAL_MS);
-}
-
-function toggleAutoBackup(){
-  if(autoBackupInterval){
-    clearInterval(autoBackupInterval);autoBackupInterval=null;
-    document.getElementById('auto-backup-btn').textContent='⏱️ تفعيل النسخ التلقائي';
-    document.getElementById('backup-status').textContent='';
-    toast('تم إيقاف النسخ التلقائي');
-  } else {
-    startBackupCycle();
-    document.getElementById('auto-backup-btn').textContent='⏹️ إيقاف النسخ التلقائي';
-    document.getElementById('backup-status').textContent='✅ النسخ التلقائي مفعّل (كل 10 دقائق)';
-    toast('✅ تم تفعيل النسخ التلقائي كل 10 دقائق');
-  }
-}
-
-// --- إشعار التذكير بالحفظ ---
-function showBackupReminder(){
-  const el=document.getElementById('backup-reminder');
-  if(el){el.classList.add('show');}
-}
-function dismissReminder(){
-  const el=document.getElementById('backup-reminder');
-  if(el){el.classList.remove('show');}
-}
-function doBackupAndDismiss(){
-  manualBackup();
-  dismissReminder();
-}
+// ===== النسخ الاحتياطي على الجهاز: معطّل =====
+// البيانات بتتحفظ على السيرفر فقط، ولا بتتخزّن على الكمبيوتر اللي بيفتح البرنامج.
+function autoSaveToBrowser(){}
+async function manualBackup(){ toast('البيانات محفوظة على السيرفر فقط ولا تُحفظ على هذا الجهاز'); }
+function startBackupCycle(){}
+function toggleAutoBackup(){}
+function showBackupReminder(){}
+function dismissReminder(){var el=document.getElementById('backup-reminder');if(el)el.classList.remove('show');}
+function doBackupAndDismiss(){dismissReminder();}
 
 // ============================================================
 // EXPORT / IMPORT
 // ============================================================
 function exportData(){
+  if(!guardPerm('reports.x','تصدير البيانات'))return;
   const all=getBackupData();
   const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`personnel_data_${new Date().toISOString().slice(0,10)}.json`;a.click();
@@ -3646,7 +3762,7 @@ function clearAllData(){
 // ============================================================
 const XL_SCHEMAS={
   officers:{label:'ضباط',req:'name',dedupe:'nationalId',cols:[
-    ['الأقدمية','seniority'],['الرتبة','rank'],['الاسم','name'],['الشهرة','nickname'],['الرقم القومي','nationalId'],['التليفون','mobile'],['رقم السلاح','gunNo'],['جهة العمل','unit'],['الوظيفة','duty'],['العنوان','address'],['تاريخ الميلاد','birthdate','date'],['الحالة الاجتماعية','marital'],['الأولاد','children'],['الوظائف السابقة','prevJobs'],['الأقارب','relatives'],['بيانات أخرى','otherData'],['ملاحظات','notes']]},
+    ['الأقدمية','seniority'],['الرتبة','rank'],['الاسم','name'],['الشهرة','nickname'],['الرقم القومي','nationalId'],['التليفون','mobile'],['رقم السلاح','gunNo'],['جهة العمل','unit'],['الوظيفة','duty'],['العنوان','address'],['تاريخ الميلاد','birthdate','date'],['الحالة الاجتماعية','marital'],['الأولاد','children'],['الوظائف السابقة','prevJobs'],['الأقارب','relatives'],['بيانات أخرى','otherData'],['ملاحظات','notes'],['الفرق التدريبية','trainingsText']]},
   soldiers:{label:'أفراد',req:'name',dedupe:'nationalId',cols:[
     ['رقم الشرطة','policeNo'],['الرتبة','rank'],['الاسم','name'],['الرقم القومي','nationalId'],['التليفون','mobile'],['تليفون قريب','relativePhone'],['جهة العمل','unit'],['الوظيفة','duty'],['العنوان','address'],['تاريخ الالتحاق','joinDate','date'],
     ['اسم الأب','fatherName'],['وظيفة الأب','fatherJob'],['اسم الأم','motherName'],['وظيفة الأم','motherJob'],['اسم الزوجة','wifeName'],['وظيفة الزوجة','wifeJob'],['ملاحظات','notes']]},
@@ -3674,6 +3790,10 @@ function xlText(v,key){
   if(key==='mobile'||key==='relativePhone'){const dg=t.replace(/\D/g,'');if(dg.length===10&&dg[0]==='1')t='0'+dg;}
   return t.trim();
 }
+function xlSplitCourses(v){
+  const seen=new Set();
+  return String(v||'').split(/[\r\n،؛;,|]+/).map(x=>x.trim()).filter(x=>{if(!x||seen.has(x))return false;seen.add(x);return true;}).map(x=>({name:x}));
+}
 function xlReset(){_xlRows=null;const p=document.getElementById('xl-preview');if(p){p.style.display='none';p.innerHTML='';}const f=document.getElementById('xl-file');if(f)f.value='';}
 function xlDownloadTemplate(){
   if(typeof XLSX==='undefined'){toast('مكتبة إكسل غير محمّلة','linear-gradient(135deg,#c0392b,#e74c3c)');return;}
@@ -3687,7 +3807,7 @@ function xlDownloadTemplate(){
   XLSX.writeFile(wb,'قالب_'+sc.label+'.xlsx');
 }
 function xlLoadFile(e){
-  if(!guardAdminAction('الاستيراد'))return;
+  if(!guardPerm('import.a','الاستيراد'))return;
   const file=e.target.files[0];if(!file)return;
   if(typeof XLSX==='undefined'){toast('مكتبة إكسل غير محمّلة','linear-gradient(135deg,#c0392b,#e74c3c)');return;}
   if(_fileTooBig(file))return;
@@ -3743,7 +3863,7 @@ function xlRenderPreview(){
   const oldN=DB[x.type]().length;
   h+='<div style="margin:10px 0;font-size:13px;line-height:2;">'
    +'<label style="display:block;cursor:pointer;"><input type="radio" name="xl-mode" value="add" checked onchange="xlModeChange()"> إضافة على البيانات الموجودة ('+oldN+' سجل حالي)</label>'
-   +'<label style="display:block;cursor:pointer;color:#e8a05a;"><input type="radio" name="xl-mode" value="replace" onchange="xlModeChange()"> 🔄 استبدال: مسح كل بيانات '+sc.label+' الحالية ('+oldN+') ووضع الجديدة بدلها</label></div>';
+   +'<label class="admin-only" style="display:block;cursor:pointer;color:#e8a05a;"><input type="radio" name="xl-mode" value="replace" onchange="xlModeChange()"> 🔄 استبدال: مسح كل بيانات '+sc.label+' الحالية ('+oldN+') ووضع الجديدة بدلها</label></div>';
   h+='<label id="xl-skipdup-wrap" style="display:'+(x.dup?'flex':'none')+';align-items:center;gap:8px;font-size:12px;margin-bottom:10px;cursor:pointer;"><input type="checkbox" id="xl-skipdup" checked> تخطي السجلات المكررة</label>';
   h+='<div style="display:flex;gap:10px;"><button class="btn btn-gold" onclick="xlConfirm()">✅ تأكيد الاستيراد</button><button class="btn btn-outline" onclick="xlReset()">إلغاء</button></div></div>';
   p.innerHTML=h;p.style.display='block';
@@ -3756,13 +3876,14 @@ function xlModeChange(){
   w.style.display=n?'flex':'none';
 }
 function xlConfirm(){
-  if(!guardAdminAction('الاستيراد'))return;
+  if(!guardPerm('import.a','الاستيراد'))return;
   const x=_xlRows;if(!x)return;
   const sk=document.getElementById('xl-skipdup');const skipDup=!sk||sk.checked;
   const now=new Date().toISOString();
   const replaceMode=xlMode()==='replace';
+  if(replaceMode&&!isAdminUser()){toast('⛔ وضع الاستبدال للمدير العام فقط','linear-gradient(135deg,#c0392b,#e74c3c)');return;}
   const add=x.rows.filter(r=>!(skipDup&&(replaceMode?r._dupF:r._dup))).map(r=>{const o={...r};delete o._dup;
-    if(x.type==='officers'){o.annualLeaves=[];o.emergencyLeaves=[];o.sickLeaves=[];o.compRests=[];o.missions=[];o.reinforcements=[];o.privileges=[];o.trainings=[];}
+    if(x.type==='officers'){o.annualLeaves=[];o.emergencyLeaves=[];o.sickLeaves=[];o.compRests=[];o.missions=[];o.reinforcements=[];o.privileges=[];o.trainings=xlSplitCourses(o.trainingsText);delete o.trainingsText;}
     if(x.type==='soldiers'){['brothers','sisters','wifeSiblings','uncles','aunts','muncles','maunts','friends','annualLeaves','emergencyLeaves','sickLeaves','privileges'].forEach(k=>o[k]=[]);}
     if(x.type==='recruits'){o.exceptionLeaves=[];o.leaveStatus='working';if(o.absent==null)o.absent=0;}
     return {id:uid(),...o,createdAt:now};});
@@ -3796,7 +3917,7 @@ function _fileTooBig(file){
   return false;
 }
 function importFile(e){
-  if(!guardAdminAction('الاستيراد'))return;
+  if(!guardPerm('import.a','الاستيراد'))return;
   const file=e.target.files[0];if(!file)return;
   if(_fileTooBig(file))return;
   const reader=new FileReader();
@@ -3823,7 +3944,7 @@ function importFile(e){
   reader.readAsText(file);
 }
 function importJSON(){
-  if(!guardAdminAction('الاستيراد'))return;
+  if(!guardPerm('import.a','الاستيراد'))return;
   const raw=document.getElementById('import-json').value.trim();if(!raw)return;
   try{
     const data=JSON.parse(raw);
@@ -3846,7 +3967,7 @@ function loadSampleData(){
       emergencyLeaves:[{reason:'وفاة في الأسرة',from:'2024-03-15',to:'2024-03-17',days:3}],
       compRests:[{day:'2024-02-09',hijri:'29 رجب 1445',reason:'تشغيل في الجمعة',status:'done',doneDate:'2024-02-16'}],
       missions:[],reinforcements:[],privileges:[{name:'امتياز التميز',date:'2024-05-01',returnDate:'2024-06-01',note:''}],
-      trainings:[{name:'الفرقة الأولى لمكافحة الإرهاب',place:'أكاديمية الشرطة',from:'2023-09-01',to:'2023-09-15',rankInCourse:'الأول'}]
+      trainings:[{name:'الفرقة الأولى لمكافحة الإرهاب'}]
     }
   ];
   const sampleSoldiers=[
@@ -3873,7 +3994,7 @@ function whTx(){try{return JSON.parse(_safeStorage.getItem('pms_wh_tx')||'[]');}
 function whSaveTx(d){_safeStorage.setItem('pms_wh_tx',JSON.stringify(d));}
 
 function whShowPanel(id){
-  if((id==='wh-in'||id==='wh-out') && !isAdminUser()){ guardAdminAction('تسجيل حركة المخزن'); id='wh-stock'; }
+  if((id==='wh-in'&&!can('warehouse.in'))||(id==='wh-out'&&!can('warehouse.out'))){ guardPerm('warehouse.'+(id==='wh-in'?'in':'out'),'تسجيل حركة المخزن'); id='wh-stock'; }
   document.querySelectorAll('.wh-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.wh-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -3914,7 +4035,7 @@ function whRenderStock(){
 }
 
 function whSaveIn(){
-  if(!guardAdminAction('تسجيل الاستلام'))return;
+  if(!guardPerm('warehouse.in','تسجيل الاستلام'))return;
   const item=document.getElementById('whin-item').value;
   const qty=parseInt(document.getElementById('whin-qty').value)||0;
   const date=document.getElementById('whin-date').value;
@@ -3932,7 +4053,7 @@ function whSaveIn(){
 }
 
 function whSaveOut(){
-  if(!guardAdminAction('تسجيل الصرف'))return;
+  if(!guardPerm('warehouse.out','تسجيل الصرف'))return;
   const item=document.getElementById('whout-item').value;
   const dest=document.getElementById('whout-dest').value;
   const qty=parseInt(document.getElementById('whout-qty').value)||0;
@@ -3991,13 +4112,13 @@ function whRenderHistory(){
       <td>${esc(t.dest||'<span style="color:rgba(205,214,232,0.3);">من الإمداد</span>')}</td>
       <td>${esc(t.date)}</td>
       <td style="max-width:180px;white-space:normal;font-size:11px;">${esc(t.notes||'—')}</td>
-      <td><button class="btn btn-red btn-sm admin-only" onclick="whDeleteTx('${eid(t.id)}')">🗑️</button></td>
+      <td><button class="btn btn-red btn-sm" data-perm="warehouse.d" onclick="whDeleteTx('${eid(t.id)}')">🗑️</button></td>
     </tr>`).join('');
   document.getElementById('wh-history-count').textContent=`${rows.length} حركة`;
 }
 
 function whDeleteTx(id){
-  if(!guardAdminAction('الحذف'))return;
+  if(!guardPerm('warehouse.d','حذف الحركة'))return;
   if(!confirm('حذف هذه الحركة؟')) return;
   whSaveTx(whTx().filter(t=>t.id!==id));
   whRenderHistory();
@@ -4031,7 +4152,7 @@ function whPrintBase(title,bodyHTML){
   <h1>وكالة العمليات برئاسة القطاع — قسم الشؤون الإدارية</h1>
   <div class="sub">${title} — طُبع بتاريخ: ${new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})}</div>
   ${bodyHTML}
-  <div class="footer">© جميع الحقوق محفوظة — وكالة العمليات</div>
+  <div class="footer">© جميع الحقوق محفوظة — رائد / محمد أسامة منصور</div>
   <br><button onclick="window.print()" style="padding:8px 20px;background:#0a1628;color:#fff;border:none;border-radius:6px;font-family:Cairo,sans-serif;font-size:14px;cursor:pointer;">🖨️ طباعة</button>
   </body></html>`);
   w.document.close();
@@ -4112,10 +4233,6 @@ _initStorage().then(function(){ return _startSyncOnce(); }).then(function(){
   updateDashboard();
   updateHeader();
   whRenderStock();
-  // بدء دورة الحفظ التلقائي فور تشغيل البرنامج
-  startBackupCycle();
-  document.getElementById('auto-backup-btn').textContent='⏹️ إيقاف النسخ التلقائي';
-  document.getElementById('backup-status').textContent='✅ النسخ التلقائي مفعّل (كل 10 دقائق)';
 });
 </script>
 <!-- ============================================================
@@ -4145,9 +4262,38 @@ var _safeSession = (function(){
 function isAdminUser(){
   return _safeSession.getItem('lg_role') === 'admin';
 }
+// يطبّق الصلاحيات على الواجهة: يخفي كل عنصر عليه data-perm لا يملك المستخدم صلاحيته
 function applyPermissions(){
   var admin = isAdminUser();
   document.body.classList.toggle('view-only', !admin);
+  var anyWrite = admin || _perms().some(function(p){ return /\.(a|e|d|in|out)$/.test(p); });
+  document.body.classList.toggle('read-only-user', !anyWrite);
+  var css='';
+  if(!admin) ALL_PERMS.forEach(function(p){ if(!can(p)) css+='[data-perm~="'+p+'"]{display:none !important;}'; });
+  var st=document.getElementById('perm-style');
+  if(!st){ st=document.createElement('style'); st.id='perm-style'; document.head.appendChild(st); }
+  st.textContent=css;
+}
+var _SEC_PERM={officers:'officers.v',soldiers:'soldiers.v',recruits:'recruits.v',vehicles:'vehicles.v','training-search':'training.v','privilege-search':'privileges.v',reports:'reports.v',import:'import.a',warehouse:'warehouse.v'};
+function _sectionAllowed(n){ if(n==='accounts') return isAdminUser(); var p=_SEC_PERM[n]; return !p||can(p); }
+function _secOf(type){ return {officer:'officers',soldier:'soldiers',recruit:'recruits',vehicle:'vehicles'}[type]||type; }
+function guardPerm(perm,actionName){
+  if(can(perm)) return true;
+  toast('⛔ ليس لديك صلاحية '+(actionName||'هذا الإجراء')+' — تواصل مع المدير العام','linear-gradient(135deg,#c0392b,#e74c3c)');
+  return false;
+}
+// صلاحيات اتغيّرت من الأدمن أثناء الجلسة (بتوصلنا مع الـ meta كل ~20 ثانية)
+function lgApplyMe(me){
+  if(!me||!_tk()) return;
+  if(me.name) _safeSession.setItem('lg_name',me.name);
+  var nw=JSON.stringify(me.perms||[]), role=me.role||'viewer';
+  if((_safeSession.getItem('lg_perms')||'[]')===nw && (_safeSession.getItem('lg_role')||'viewer')===role) return;
+  _safeSession.setItem('lg_perms',nw); _safeSession.setItem('lg_role',role);
+  _purgeUnreadable(); applyPermissions();
+  var cur=document.querySelector('.section.active');
+  if(cur&&!_sectionAllowed(cur.id)) showSection('dashboard');
+  _refreshUI();
+  toast('🔄 تم تحديث صلاحياتك');
 }
 function guardAdminAction(actionName){
   if(!isAdminUser()){
@@ -4260,7 +4406,9 @@ function lgDoLogin(){
     _safeSession.setItem('lg_tk',j.token);
     _safeSession.setItem('lg_name',j.name);
     _safeSession.setItem('lg_role',j.role||'viewer');
+    _safeSession.setItem('lg_perms',JSON.stringify(j.perms||[]));
     if(typeof lgIdleReset==='function') lgIdleReset();
+    _purgeUnreadable();
     applyPermissions();
     _syncStarted=false;
     var syncP=Promise.resolve(_startSyncOnce()).then(function(){ if(typeof _refreshUI==='function') _refreshUI(); updateDashboard(); updateHeader(); whRenderStock(); }).catch(function(){});
@@ -4275,16 +4423,17 @@ function lgDoLogin(){
     });
   }).catch(function(e){
     if(e&&e.code==='locked') fail('⛔ تم قفل الحساب مؤقتاً بسبب محاولات خاطئة كثيرة، حاول لاحقاً');
+    else if(e&&e.code==='disabled') fail('⛔ هذا الحساب موقوف — تواصل مع المدير العام');
     else if(e&&e.code==='bad_credentials') fail('❌ اسم المستخدم أو كلمة المرور غير صحيحة');
     else fail('⚠️ تعذر الاتصال بالسيرفر، حاول مرة أخرى');
   });
 }
 
 // خروج إجباري (انتهت الجلسة أو التوكن غير صالح)
-function lgForceLogout(){
+function lgForceLogout(msg){
   _safeSession.removeItem('lg_auth'); _safeSession.removeItem('lg_tk');
-  _safeSession.removeItem('lg_name'); _safeSession.removeItem('lg_role');
-  _syncStarted=false;
+  _safeSession.removeItem('lg_name'); _safeSession.removeItem('lg_role'); _safeSession.removeItem('lg_perms');
+  _syncStarted=false; _clearMemory();
   document.querySelectorAll('.modal-overlay.open').forEach(function(m){m.classList.remove('open');});
   applyPermissions();
   var ov=document.getElementById('login-overlay');
@@ -4292,11 +4441,14 @@ function lgForceLogout(){
   var err=document.getElementById('lg-err'),btn=document.getElementById('lg-btn');
   lgLoader(false);
   if(btn){btn.disabled=false;btn.textContent='دخول ← إلى النظام';btn.style.background='';btn.style.color='';}
-  if(err){err.textContent='⚠️ انتهت الجلسة، سجّل الدخول من جديد';err.className='lg-err show';}
+  if(err){err.textContent=msg||'⚠️ انتهت الجلسة، سجّل الدخول من جديد';err.className='lg-err show';}
 }
 
 // ===== تسجيل الخروج =====
 function lgLogout(){
+  if(Object.keys(_dirty).length||Object.keys(_pushing).some(function(k){return _pushing[k];})){
+    toast('⏳ جاري حفظ آخر التعديلات على السيرفر — حاول بعد لحظات','linear-gradient(135deg,#b7791f,#d69e2e)'); return;
+  }
   if(!confirm('هل تريد تسجيل الخروج؟')) return;
   lgDoLogout();
 }
@@ -4306,6 +4458,8 @@ function lgDoLogout(msg,idle){
   _safeSession.removeItem('lg_tk');
   _safeSession.removeItem('lg_name');
   _safeSession.removeItem('lg_role');
+  _safeSession.removeItem('lg_perms');
+  _clearMemory();
   document.querySelectorAll('.modal-overlay.open').forEach(function(m){m.classList.remove('open');});
   applyPermissions();
   showSection('dashboard');
