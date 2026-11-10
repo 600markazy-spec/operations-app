@@ -694,7 +694,7 @@
   </div>
   <div class="table-wrap">
     <div class="table-scroll">
-      <table><thead><tr><th class="sticky-col">الإجراءات</th><th>رقم المركبة</th><th>النوع</th><th>الموديل</th><th>الحالة الفنية</th><th>السائق</th><th>الجهة</th><th>رقم سري</th></tr></thead><tbody id="vehicles-body"></tbody></table>
+      <table><thead><tr><th class="sticky-col">الإجراءات</th><th>رقم المركبة</th><th>النوع</th><th>الموديل</th><th>الحالة الفنية</th><th>التشغيل</th><th>الجهة</th><th>رقم سري</th></tr></thead><tbody id="vehicles-body"></tbody></table>
     </div>
     <div class="record-count" id="vehicles-count">0 سجل</div>
   </div>
@@ -1489,7 +1489,7 @@
         <div class="form-group"><label>الموديل</label><input type="text" id="v-model"></div>
         <div class="form-group"><label>سنة الصنع</label><input type="number" id="v-year"></div>
         <div class="form-group"><label>الحالة الفنية</label><select id="v-condition"><option>ممتازة</option><option>جيدة</option><option>متوسطة</option><option>تحت الإصلاح</option><option>معطلة</option></select></div>
-        <div class="form-group"><label>السائق المسؤول</label><input type="text" id="v-driver"></div>
+        <div class="form-group"><label>التشغيل</label><input type="text" id="v-driver"></div>
         <div class="form-group"><label>الجهة</label><input type="text" id="v-unit"></div>
         <div class="form-group"><label>رقم سري</label><input type="text" id="v-secret"></div>
         <div class="form-group full"><label>ملاحظات</label><textarea id="v-notes" rows="3"></textarea></div>
@@ -3705,7 +3705,7 @@ function printReport(type){
     rows=data.map(r=>[r.policeNo,r.name,r.mobile,r.unit,r.startDate,r.endDate,r.qualification,r.absent,r.leaveStatus==='on-leave'?'في إجازة':r.leaveStatus==='returned'?'عاد للتو':'في الخدمة']);
   }else{
     data=DB.vehicles();title='كشف المركبات';
-    headers=['رقم المركبة','النوع','الموديل','السنة','الحالة الفنية','السائق','الجهة'];
+    headers=['رقم المركبة','النوع','الموديل','السنة','الحالة الفنية','التشغيل','الجهة'];
     rows=data.map(r=>[r.number,r.type,r.model,r.year,r.condition,r.driver,r.unit]);
   }
   const w=window.open('','_blank');
@@ -3769,7 +3769,7 @@ const XL_SCHEMAS={
   recruits:{label:'مجندون',req:'name',dedupe:'nationalId',cols:[
     ['رقم الشرطة','policeNo'],['الاسم','name'],['الرقم القومي','nationalId'],['التليفون','mobile'],['المؤهل','qualification'],['تاريخ التجنيد','startDate','date'],['تاريخ الانتهاء','endDate','date'],['تاريخ الاحتياط','reserveDate','date'],['جهة العمل','unit'],['الاحتياط','reserve'],['العنوان','address'],['أيام الغياب','absent','int'],['الجزاءات','penalties'],['ملاحظات','notes']]},
   vehicles:{label:'مركبات',req:'number',dedupe:'number',cols:[
-    ['رقم المركبة','number'],['النوع','type'],['الموديل','model'],['سنة الصنع','year'],['الحالة','condition'],['السائق','driver'],['جهة العمل','unit'],['سري','secret'],['ملاحظات','notes']]}
+    ['رقم المركبة','number'],['النوع','type'],['الموديل','model'],['سنة الصنع','year'],['الحالة','condition'],['التشغيل','driver'],['جهة العمل','unit'],['سري','secret'],['ملاحظات','notes']]}
 };
 let _xlRows=null;
 function xlNorm(h){return String(h==null?'':h).replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[\s_\-\/]+/g,'').toLowerCase();}
